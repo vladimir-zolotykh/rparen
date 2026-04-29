@@ -69,6 +69,11 @@ class ExpressionParser:
                 res = DivOp(res, right)
         return res
 
+    def expect(self, expected: str):
+        tok: Token = next(self.tokens)
+        if tok.val != expected:
+            raise SyntaxError(f"Expected {expected!r}, got {tok.val!r}")
+
     def factor(self) -> Node:
         tok = next(self.tokens)
         if tok.val == "LPAREN":
