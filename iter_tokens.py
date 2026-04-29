@@ -19,7 +19,7 @@ tokens_dict = {
     "WS": r"\s+",
 }
 
-test_str = "2+(3+4)*5"
+test_str = "2 + ( 3 + 4) * 5"
 
 
 @dataclass
@@ -28,12 +28,13 @@ class Token:
     value: str
 
 
-def iter_tokens(s: str) -> Iterator[Token]:
+def iter_tokens(s: str, skip_ws: bool = True) -> Iterator[Token]:
     master_pat = "|".join(
         rf"(?P<{tok_key}>{tok_re})" for tok_key, tok_re in tokens_dict.items()
     )
     for match in re.finditer(master_pat, s):
-        yield Token(match.lastgroup, match.group())
+        if not (match.lastgroup == "WS" and skip_ws):
+            yield Token(match.lastgroup, match.group())
 
 
 if __name__ == "__main__":
