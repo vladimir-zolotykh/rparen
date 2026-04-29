@@ -14,8 +14,8 @@ tokens_dict = {
     "EQ": r"=",
     "PLUS": r"\+",
     "MINUS": r"-",
-    "STAR": r"\*",
-    "DIVIDE": r"/",
+    "MUL": r"\*",
+    "DIV": r"/",
     "WS": r"\s+",
 }
 
