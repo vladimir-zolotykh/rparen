@@ -4,7 +4,7 @@
 from __future__ import annotations
 from typing import Iterator, Any
 from dataclasses import dataclass
-from iter_tokens import iter_tokens, Token
+from iter_tokens import iter_tokens, Token, test_str
 
 
 @dataclass
@@ -52,7 +52,8 @@ class ExpressionParser:
     def expr(self) -> Node:
         res = self.term()
         while (op := next(self.tokens)).val in ("+", "-"):
-            right = self.expr()
+            print(f"{op = }")
+            right = self.term()
             if op == "+":
                 res = AddOp(res, right)
             else:
@@ -62,7 +63,7 @@ class ExpressionParser:
     def term(self) -> Node:
         res = self.factor()
         while (op := next(self.tokens)).val in ("*", "/"):
-            right = self.term()
+            right = self.factor()
             if op == "*":
                 res = MulOp(res, right)
             else:
@@ -76,9 +77,9 @@ class ExpressionParser:
 
     def factor(self) -> Node:
         tok = next(self.tokens)
-        if tok.val == "LPAREN":
+        if tok.val == "(":
             res = self.expr()
-            self.expect("RPAREN")
+            self.expect(")")
             return res
         else:
             return Number(tok.val)
@@ -86,3 +87,9 @@ class ExpressionParser:
     def parse(self, expr: str) -> Node:
         self.tokens: Iterator[Token] = iter_tokens(expr)
         return self.expr()
+
+
+if __name__ == "__main__":
+    parser = ExpressionParser()
+    res = parser.parse(test_str)
+    print(res)

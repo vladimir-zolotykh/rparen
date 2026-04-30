@@ -25,7 +25,7 @@ test_str = "2 + ( 3 + 4) * 5"
 @dataclass
 class Token:
     name: str
-    value: str
+    val: str
 
 
 def iter_tokens(s: str, skip_ws: bool = True) -> Iterator[Token]:
@@ -38,5 +38,5 @@ def iter_tokens(s: str, skip_ws: bool = True) -> Iterator[Token]:
 
 
 if __name__ == "__main__":
-    for tok in iter_tokens(test_str):
+    for tok in iter_tokens(test_str, skip_ws=True):
         print(tok)
