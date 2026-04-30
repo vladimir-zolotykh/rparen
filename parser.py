@@ -4,6 +4,7 @@
 from __future__ import annotations
 from typing import Iterator, Any
 from dataclasses import dataclass
+from functools import wraps
 from iter_tokens import iter_tokens, Token, test_str
 
 
@@ -48,11 +49,25 @@ class DivOp(BinaryOp):
     pass
 
 
+def trace_when_called(trace_id=True):
+    def deco(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if trace_id:
+                print(f"{func.__name__} is called")
+            res = func(*args, **kwargs)
+            return res
+
+        return wrapper
+
+    return deco
+
+
 class ExpressionParser:
+    @trace_when_called
     def expr(self) -> Node:
         res = self.term()
         while (op := next(self.tokens)).val in ("+", "-"):
-            print(f"{op = }")
             right = self.term()
             if op == "+":
                 res = AddOp(res, right)
@@ -60,6 +75,7 @@ class ExpressionParser:
                 res = MinusOp(res, right)
         return res
 
+    @trace_when_called
     def term(self) -> Node:
         res = self.factor()
         while (op := next(self.tokens)).val in ("*", "/"):
@@ -70,11 +86,13 @@ class ExpressionParser:
                 res = DivOp(res, right)
         return res
 
+    @trace_when_called(False)
     def expect(self, expected: str):
         tok: Token = next(self.tokens)
         if tok.val != expected:
             raise SyntaxError(f"Expected {expected!r}, got {tok.val!r}")
 
+    @trace_when_called
     def factor(self) -> Node:
         tok = next(self.tokens)
         if tok.val == "(":
