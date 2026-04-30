@@ -64,7 +64,7 @@ def trace_when_called(trace_id=True):
 
 
 class ExpressionParser:
-    @trace_when_called
+    @trace_when_called()
     def expr(self) -> Node:
         res = self.term()
         while (op := next(self.tokens)).val in ("+", "-"):
@@ -75,7 +75,7 @@ class ExpressionParser:
                 res = MinusOp(res, right)
         return res
 
-    @trace_when_called
+    @trace_when_called()
     def term(self) -> Node:
         res = self.factor()
         while (op := next(self.tokens)).val in ("*", "/"):
@@ -92,7 +92,7 @@ class ExpressionParser:
         if tok.val != expected:
             raise SyntaxError(f"Expected {expected!r}, got {tok.val!r}")
 
-    @trace_when_called
+    @trace_when_called()
     def factor(self) -> Node:
         tok = next(self.tokens)
         if tok.val == "(":
@@ -102,6 +102,7 @@ class ExpressionParser:
         else:
             return Number(tok.val)
 
+    @trace_when_called()
     def parse(self, expr: str) -> Node:
         self.tokens: Iterator[Token] = iter_tokens(expr)
         return self.expr()
