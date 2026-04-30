@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 from __future__ import annotations
-from typing import Iterator, Any
+from typing import Iterator, Any, Optional
 from dataclasses import dataclass
 from functools import wraps
+import logging
 from iter_tokens import iter_tokens, Token, test_str
 
 
@@ -49,13 +50,15 @@ class DivOp(BinaryOp):
     pass
 
 
-def trace_when_called(trace_id=True):
+def trace_when_called(trace_it=True):
     def deco(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            if trace_id:
-                print(f"{func.__name__} is called")
+            if trace_it:
+                logging.getLogger(__name__).info(f"Starting {func.__name__} ...")
             res = func(*args, **kwargs)
+            if trace_it and not (res is None):
+                logging.getLogger(__name__).info(f"{func.__name__} returned {res!r}")
             return res
 
         return wrapper
@@ -63,11 +66,19 @@ def trace_when_called(trace_id=True):
     return deco
 
 
+logging.basicConfig(level=logging.DEBUG)
+
+
+@dataclass
 class ExpressionParser:
+    tok: Optional[Token] = None
+    token: Optional[Token] = None
+    tokens: Optional[Iterator[Token]] = None
+
     @trace_when_called()
     def expr(self) -> Node:
         res = self.term()
-        while (op := next(self.tokens)).val in ("+", "-"):
+        while (op := self.advance()).val in ("+", "-"):
             right = self.term()
             if op == "+":
                 res = AddOp(res, right)
@@ -78,7 +89,7 @@ class ExpressionParser:
     @trace_when_called()
     def term(self) -> Node:
         res = self.factor()
-        while (op := next(self.tokens)).val in ("*", "/"):
+        while (op := self.advance()).val in ("*", "/"):
             right = self.factor()
             if op == "*":
                 res = MulOp(res, right)
@@ -86,15 +97,21 @@ class ExpressionParser:
                 res = DivOp(res, right)
         return res
 
+    @trace_when_called()
+    def advance(self) -> Token:
+        self.token = self.tok
+        self.tok = next(self.tokens)
+        return self.tok
+
     @trace_when_called(False)
     def expect(self, expected: str):
-        tok: Token = next(self.tokens)
-        if tok.val != expected:
-            raise SyntaxError(f"Expected {expected!r}, got {tok.val!r}")
+        if self.tok.val != expected:
+            raise SyntaxError(f"Expected {expected!r}, got {self.tok.val!r}")
+        self.advance()
 
     @trace_when_called()
     def factor(self) -> Node:
-        tok = next(self.tokens)
+        tok = self.advance()
         if tok.val == "(":
             res = self.expr()
             self.expect(")")
