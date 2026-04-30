@@ -66,7 +66,7 @@ def trace_when_called(trace_it=True):
     return deco
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG, filename="./.parser.log", filemode="w")
 
 
 @dataclass
