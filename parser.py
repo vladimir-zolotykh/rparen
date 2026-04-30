@@ -98,6 +98,11 @@ class ExpressionParser:
         return res
 
     @trace_when_called()
+    def consume(self):
+        self.token = self.tok
+        self.tok = None
+
+    @trace_when_called()
     def advance(self) -> Token:
         self.token = self.tok
         self.tok = next(self.tokens)
