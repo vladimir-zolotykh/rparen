@@ -116,17 +116,19 @@ class ExpressionParser:
 
     @trace_when_called()
     def factor(self) -> Node:
-        tok = self.advance()
-        if tok.val == "(":
+        # tok = self.advance()
+        if self.tok.val == "(":
+            self.advance()
             res = self.expr()
             self.expect(")")
             return res
         else:
-            return Number(tok.val)
+            return Number(self.tok.val)
 
     @trace_when_called()
     def parse(self, expr: str) -> Node:
         self.tokens: Iterator[Token] = iter_tokens(expr)
+        self.advance()
         return self.expr()
 
 
