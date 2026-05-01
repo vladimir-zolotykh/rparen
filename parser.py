@@ -103,9 +103,12 @@ class ExpressionParser:
         self.tok = None
 
     @trace_when_called()
-    def advance(self) -> Token:
+    def advance(self) -> Optional[Token]:
         self.token = self.tok
-        self.tok = next(self.tokens)
+        try:
+            self.tok = next(self.tokens)
+        except StopIteration:
+            return None
         return self.tok
 
     @trace_when_called(False)
@@ -134,5 +137,6 @@ class ExpressionParser:
 
 if __name__ == "__main__":
     parser = ExpressionParser()
-    res = parser.parse(test_str)
+    # res = parser.parse(test_str)
+    res = parser.parse("2")
     print(res)
