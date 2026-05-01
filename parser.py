@@ -78,11 +78,7 @@ class ExpressionParser:
     @trace_when_called()
     def expr(self) -> Node:
         res = self.term()
-        # while (op := self.advance()).val in ("+", "-"):
         while not ((op := self.advance()) is None) and op.val in ("+", "-"):
-            op = self.advance()
-            if op is None or op.val not in ("+", "-"):
-                break
             right = self.term()
             if op == "+":
                 res = AddOp(res, right)
@@ -93,7 +89,6 @@ class ExpressionParser:
     @trace_when_called()
     def term(self) -> Node:
         res = self.factor()
-        # while (op := self.advance()).val in ("*", "/"):
         while not ((op := self.advance()) is None) and op.val in ("*", "/"):
             right = self.factor()
             if op == "*":
@@ -143,5 +138,5 @@ class ExpressionParser:
 if __name__ == "__main__":
     parser = ExpressionParser()
     # res = parser.parse(test_str)
-    res = parser.parse("2")
+    res = parser.parse("2 + 3")
     print(res)
