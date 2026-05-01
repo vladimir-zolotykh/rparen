@@ -78,7 +78,13 @@ class ExpressionParser:
     @trace_when_called()
     def expr(self) -> Node:
         res = self.term()
-        while not ((op := self.advance()) is None) and op.val in ("+", "-"):
+        print(f"expr {res = }")
+        while True:
+            if self.tok.val in ("+", "-"):
+                op = self.tok.val
+                self.advance()
+            else:
+                break
             right = self.term()
             if op == "+":
                 res = AddOp(res, right)
@@ -89,7 +95,13 @@ class ExpressionParser:
     @trace_when_called()
     def term(self) -> Node:
         res = self.factor()
-        while not ((op := self.advance()) is None) and op.val in ("*", "/"):
+        print(f"term {res = }")
+        while True:
+            if self.tok.val in ("*", "/"):
+                op = self.tok.val
+                self.advance()
+            else:
+                break
             right = self.factor()
             if op == "*":
                 res = MulOp(res, right)
@@ -98,9 +110,14 @@ class ExpressionParser:
         return res
 
     @trace_when_called()
-    def consume(self):
-        self.token = self.tok
-        self.tok = None
+    def factor(self) -> Node:
+        if self.tok.val == "(":
+            self.advance()
+            res = self.expr()
+            self.expect(")")
+            return res
+        else:
+            return Number(self.tok.val)
 
     @trace_when_called()
     def advance(self) -> Optional[Token]:
@@ -116,17 +133,6 @@ class ExpressionParser:
         if self.tok.val != expected:
             raise SyntaxError(f"Expected {expected!r}, got {self.tok.val!r}")
         self.advance()
-
-    @trace_when_called()
-    def factor(self) -> Node:
-        # tok = self.advance()
-        if self.tok.val == "(":
-            self.advance()
-            res = self.expr()
-            self.expect(")")
-            return res
-        else:
-            return Number(self.tok.val)
 
     @trace_when_called()
     def parse(self, expr: str) -> Node:
