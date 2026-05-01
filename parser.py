@@ -78,7 +78,6 @@ class ExpressionParser:
     @trace_when_called()
     def expr(self) -> Node:
         res = self.term()
-        print(f"expr {res = }")
         while True:
             if self.tok.val in ("+", "-"):
                 op = self.tok.val
@@ -95,7 +94,6 @@ class ExpressionParser:
     @trace_when_called()
     def term(self) -> Node:
         res = self.factor()
-        print(f"term {res = }")
         while True:
             if self.tok.val in ("*", "/"):
                 op = self.tok.val
