@@ -86,9 +86,9 @@ class ExpressionParser:
                 break
             right = self.term()
             if op == "+":
-                res = AddOp(res, right)
+                res = AddOp("+", res, right)
             else:
-                res = MinusOp(res, right)
+                res = MinusOp("-", res, right)
         return res
 
     @trace_when_called()
@@ -102,9 +102,9 @@ class ExpressionParser:
                 break
             right = self.factor()
             if op == "*":
-                res = MulOp(res, right)
+                res = MulOp("*", res, right)
             else:
-                res = DivOp(res, right)
+                res = DivOp("/", res, right)
         return res
 
     @trace_when_called()
@@ -115,7 +115,9 @@ class ExpressionParser:
             self.expect(")")
             return res
         else:
-            return Number(self.tok.val)
+            num = Number(self.tok.val)
+            self.advance()
+            return num
 
     @trace_when_called()
     def advance(self) -> Optional[Token]:
