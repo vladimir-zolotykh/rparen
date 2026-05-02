@@ -115,7 +115,7 @@ class ExpressionParser:
             self.expect(")")
             return res
         else:
-            num = Number(self.tok.val)
+            num = Number(int(self.tok.val))
             self.advance()
             return num
 
