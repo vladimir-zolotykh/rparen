@@ -110,7 +110,7 @@ class ExpressionParser:
     @trace_when_called()
     def factor(self) -> Node:
         tok = self.tok
-        if self.tok.val == "(":
+        if tok.val == "(":
             self.advance()
             res = self.expr()
             self.expect(")")
