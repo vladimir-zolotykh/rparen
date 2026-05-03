@@ -6,7 +6,7 @@ from typing import Iterator, Any, Optional
 from dataclasses import dataclass
 from functools import wraps
 import logging
-from iter_tokens import iter_tokens, Token, test_str
+from iter_tokens import iter_tokens, Token
 
 
 @dataclass
