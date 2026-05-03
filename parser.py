@@ -115,7 +115,10 @@ class ExpressionParser:
             self.expect(")")
             return res
         else:
-            num = Number(int(self.tok.val))
+            try:
+                num = Number(int(self.tok.val))
+            except ValueError:
+                raise SyntaxError("Expected expr")
             self.advance()
             return num
 
