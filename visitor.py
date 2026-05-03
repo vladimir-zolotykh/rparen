@@ -27,11 +27,23 @@ class Visitor:
 class VisitorMeta(type):
     def __new__(mcls, clsname, bases, clsdict, **kwargs):
         cls = super().__new__(mcls, clsname, bases, clsdict, **kwargs)
+        parser_methods = clsdict.get("parser_methods", "")
+        assert isinstance(parser_methods, str)
+        missing = []
+        for method_name in parser_methods.split():
+            method_name = "visit" + method_name
+            if not hasattr(cls, method_name):
+                missing.append(method_name)
+            method = getattr(cls, method_name)
+            if not callable(method):
+                missing.append(method_name)
+        if missing:
+            raise TypeError(f"Methods missing: {', '.join(missing)}")
         return cls
 
 
 class VisitEvaluate(Visitor, metaclass=VisitorMeta):
-    parser_method = "AddOp BinaryOp MinusOp MulOp DivOp"
+    parser_methods = "AddOp BinaryOp MinusOp MulOp DivOp"
 
     def visitAddOp(self, node):
         return self.visit(node.left) + self.visit(node.right)
@@ -50,7 +62,7 @@ class VisitEvaluate(Visitor, metaclass=VisitorMeta):
 
 
 class VisitInfix(Visitor, metaclass=VisitorMeta):
-    parser_method = "AddOp BinaryOp MinusOp MulOp DivOp"
+    parser_methods = "AddOp BinaryOp MinusOp MulOp DivOp"
 
     def visitAddOp(self, node):
         return f"(+ {self.visit(node.left)} {self.visit(node.right)})"
