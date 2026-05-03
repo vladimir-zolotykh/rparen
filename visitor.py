@@ -38,7 +38,7 @@ class VisitorMeta(type):
             if not callable(method):
                 missing.append(method_name)
         if missing:
-            raise TypeError(f"Methods missing: {', '.join(missing)}")
+            raise TypeError(f"{clsname} missing: {', '.join(missing)}")
         return cls
 
 
