@@ -121,13 +121,6 @@ class ExpressionParser:
             return num
         else:
             raise SyntaxError("Expected NUMBER or (")
-        # else:
-        #     try:
-        #         num = Number(int(self.tok.val))
-        #     except ValueError:
-        #         raise SyntaxError("Expected expr")
-        #     self.advance()
-        #     return num
 
     @trace_when_called()
     def advance(self) -> Optional[Token]:
