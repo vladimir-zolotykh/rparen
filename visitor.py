@@ -43,7 +43,7 @@ class VisitorMeta(type):
 
 
 class VisitEvaluate(Visitor, metaclass=VisitorMeta):
-    parser_methods = "AddOp BinaryOp MinusOp MulOp DivOp"
+    parser_methods = "AddOp MinusOp MulOp DivOp"
 
     def visitAddOp(self, node):
         return self.visit(node.left) + self.visit(node.right)
@@ -62,12 +62,12 @@ class VisitEvaluate(Visitor, metaclass=VisitorMeta):
 
 
 class VisitInfix(Visitor, metaclass=VisitorMeta):
-    parser_methods = "AddOp BinaryOp MinusOp MulOp DivOp"
+    parser_methods = "AddOp MinusOp MulOp DivOp"
 
     def visitAddOp(self, node):
         return f"(+ {self.visit(node.left)} {self.visit(node.right)})"
 
-    def visitMinuxOp(self, node):
+    def visitMinusOp(self, node):
         return f"(- {self.visit(node.left)} {self.visit(node.right)})"
 
     def visitMulOp(self, node):
