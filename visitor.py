@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
+import pytest
 import parser as PR
 
 
@@ -23,7 +24,15 @@ class Visitor:
 # class DivOp(BinaryOp): ...
 
 
-class VisitEvaluate(Visitor):
+class VisitorMeta(type):
+    def __new__(mcls, clsname, bases, clsdict, **kwargs):
+        cls = super().__new__(mcls, clsname, bases, clsdict, **kwargs)
+        return cls
+
+
+class VisitEvaluate(Visitor, metaclass=VisitorMeta):
+    parser_method = "AddOp BinaryOp MinusOp MulOp DivOp"
+
     def visitAddOp(self, node):
         return self.visit(node.left) + self.visit(node.right)
 
@@ -40,7 +49,9 @@ class VisitEvaluate(Visitor):
         return node.val
 
 
-class VisitInfix(Visitor):
+class VisitInfix(Visitor, metaclass=VisitorMeta):
+    parser_method = "AddOp BinaryOp MinusOp MulOp DivOp"
+
     def visitAddOp(self, node):
         return f"(+ {self.visit(node.left)} {self.visit(node.right)})"
 
@@ -57,8 +68,22 @@ class VisitInfix(Visitor):
         return str(node.val)
 
 
-if __name__ == "__main__":
+@pytest.fixture
+def node():
     parser = PR.ExpressionParser()
-    node = parser.parse("2 + ( 3 + 4 ) * 5")
-    print(VisitEvaluate().visit(node))
-    print(VisitInfix().visit(node))
+    return parser.parse("2 + ( 3 + 4 ) * 5")
+
+
+def test_evaluate(node):
+    assert 37 == VisitEvaluate().visit(node)
+
+
+def test_infix(node):
+    assert "(+ 2 (* (+ 3 4) 5))" == VisitInfix().visit(node)
+
+
+# if __name__ == "__main__":
+#     parser = PR.ExpressionParser()
+#     node = parser.parse("2 + ( 3 + 4 ) * 5")
+#     print(VisitEvaluate().visit(node))
+#     print(VisitInfix().visit(node))
